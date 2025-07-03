@@ -1,41 +1,68 @@
 <template>
-  <h2>🍓 좋아하는 과일을 선택하세요</h2>
-  <ul class="fruit-list">
-    <li
-      v-for="(fruit, index) in fruits"
-      :key="index"
-      :class="{ selected: selectedFruit === fruit }"
-      @click="selectFruit(fruit)"
-    >
-      {{ fruit }}
-    </li>
-  </ul>
+  <div class="container">
+    <h2>📝 나만의 메모장</h2>
 
-  <p v-if="selectedFruit" class="result">
-    ✅ 당신이 선택한 과일은 <strong>{{ selectedFruit }}</strong> 입니다!
-  </p>
+    <div class="input-box">
+      <input v-model="newMemo" placeholder="메모를 입력하세요" />
+      <button @click="addMemo">추가</button>
+    </div>
+
+    <ul class="memo-list">
+      <MemoItem
+        v-for="(memo, idx) in memos"
+        :key="idx"
+        :text="memo"
+        @delete="deleteMemo(idx)"
+      />
+    </ul>
+
+    <p v-if="memos.length === 0" class="empty">메모가 없습니다</p>
+  </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
+import MemoItem from "./components/MemoItem.vue";
 
-const fruits = ref(["사과", "바나나", "포도", "복숭아", "딸기"]);
-const selectedFruit = ref("");
+const newMemo = ref("");
+const memos = ref([]);
 
-function selectFruit(fruit) {
-  selectedFruit.value = fruit;
+function addMemo() {
+  if (newMemo.value.trim()) {
+    memos.value.push(newMemo.value.trim());
+    newMemo.value = "";
+  }
 }
+
+function deleteMemo(index) {
+  memos.value.splice(index, 1);
+}
+
+// ✅ localStorage 연동
+onMounted(() => {
+  const saved = localStorage.getItem("memos");
+  if (saved) {
+    memos.value = JSON.parse(saved);
+  }
+});
+
+watch(
+  memos,
+  (newVal) => {
+    localStorage.setItem("memos", JSON.stringify(newVal));
+  },
+  { deep: true }
+);
 </script>
 
 <style scoped>
 .container {
-  max-width: 400px;
+  max-width: 500px;
   margin: 40px auto;
   padding: 24px;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  font-family: "Segoe UI", sans-serif;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 h2 {
@@ -43,37 +70,42 @@ h2 {
   margin-bottom: 16px;
 }
 
-.fruit-list {
+.input-box {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 14px;
+  background-color: #42b983;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #369973;
+}
+
+.memo-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.fruit-list li {
-  background: #f1f1f1;
-  padding: 10px 14px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s;
-  font-size: 16px;
+.empty {
   text-align: center;
-}
-
-.fruit-list li:hover {
-  background: #e3e3e3;
-}
-
-.fruit-list li.selected {
-  background-color: #42b983;
-  color: #fff;
-  font-weight: bold;
-  transform: scale(1.02);
-}
-
-.result {
-  text-align: center;
+  color: #aaa;
   margin-top: 20px;
-  font-size: 16px;
 }
 </style>
