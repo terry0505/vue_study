@@ -11,8 +11,9 @@
       <MemoItem
         v-for="(memo, idx) in memos"
         :key="idx"
-        :text="memo"
+        :memo="memo"
         @delete="deleteMemo(idx)"
+        @toggle="toggleMemo(idx)"
       />
     </ul>
 
@@ -29,13 +30,21 @@ const memos = ref([]);
 
 function addMemo() {
   if (newMemo.value.trim()) {
-    memos.value.push(newMemo.value.trim());
+    memos.value.push({
+      text: newMemo.value.trim(),
+      done: false
+    });
     newMemo.value = "";
   }
 }
 
 function deleteMemo(index) {
   memos.value.splice(index, 1);
+}
+
+function toggleMemo(index) {
+  memos.value[index].done = !memos.value[index].done;
+  memos.value = [...memos.value];
 }
 
 // ✅ localStorage 연동
@@ -45,7 +54,6 @@ onMounted(() => {
     memos.value = JSON.parse(saved);
   }
 });
-
 watch(
   memos,
   (newVal) => {
