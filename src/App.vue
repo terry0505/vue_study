@@ -4,6 +4,7 @@
     <p>현재 값: {{ count }}</p>
     <button @click="decrease">-1</button>
     <button @click="increase">+1</button>
+    <button @click="reset">초기화</button>
   </div>
 </template>
 
@@ -18,6 +19,10 @@ function increase() {
 
 function decrease() {
   count.value--;
+}
+
+function reset() {
+  count.value = 0;
 }
 </script>
 
