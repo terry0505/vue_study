@@ -2,6 +2,10 @@
   <div class="container">
     <h2>📝 나만의 메모장</h2>
 
+    <div class="search-box">
+      <input v-model="searchText" placeholder="검색어를 입력하세요" />
+    </div>
+
     <div class="input-box">
       <input v-model="newMemo" placeholder="메모를 입력하세요" />
       <button @click="addMemo">추가</button>
@@ -9,24 +13,30 @@
 
     <ul class="memo-list">
       <MemoItem
-        v-for="(memo, idx) in memos"
+        v-for="(memo, idx) in filteredMemos"
         :key="idx"
         :memo="memo"
         @delete="deleteMemo(idx)"
         @toggle="toggleMemo(idx)"
       />
     </ul>
-
     <p v-if="memos.length === 0" class="empty">메모가 없습니다</p>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import MemoItem from "./components/MemoItem.vue";
 
 const newMemo = ref("");
 const memos = ref([]);
+const searchText = ref("");
+
+const filteredMemos = computed(() =>
+  memos.value.filter((memo) =>
+    memo.text.toLowerCase().includes(searchText.value.toLowerCase())
+  )
+);
 
 function addMemo() {
   if (newMemo.value.trim()) {
@@ -78,6 +88,18 @@ h2 {
   margin-bottom: 16px;
 }
 
+.search-box {
+  margin-bottom: 16px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+}
+
 .input-box {
   display: flex;
   gap: 8px;
@@ -88,6 +110,7 @@ input {
   flex: 1;
   padding: 10px;
   border-radius: 8px;
+  box-sizing: border-box;
   border: 1px solid #ccc;
 }
 
@@ -99,6 +122,8 @@ button {
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
+  box-sizing: border-box;
+  line-height: 1;
 }
 
 button:hover {
