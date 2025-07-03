@@ -1,29 +1,30 @@
 <template>
   <div>
-    <h2>이름을 입력해보세요.</h2>
-    <input v-model="name" placeholder="이름 입력" />
-    <p>안녕하세요, {{ name }}님!</p>
-
-    <h2>reactive 객체 실습</h2>
-    <input v-model="user.firstName" placeholder="이름 입력" />
-    <input v-model="user.lastName" placeholder="성 입력" />
-    <p>안녕하세요, {{ user.firstName }} {{ user.lastName }}님!</p>
+    <h2>카운터 앱</h2>
+    <p>현재 값: {{ count }}</p>
+    <button @click="decrease">-1</button>
+    <button @click="increase">+1</button>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 
-const name = ref("홍길동"); //단일 값
-const user = reactive({
-  firstName: "홍",
-  lastName: "길동"
-}); //객체
+const count = ref(0);
+
+function increase() {
+  count.value++;
+}
+
+function decrease() {
+  count.value--;
+}
 </script>
 
 <style scoped>
-input {
+button {
   margin: 4px;
-  padding: 4px;
+  padding: 6px 10px;
+  font-weight: bold;
 }
 </style>
